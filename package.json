@@ -1,0 +1,42 @@
+{
+  "name": "coffee-sprites",
+  "version": "0.0.1",
+  "description": "CoffeeScript/JavaScript stylesheet-based sprite image engine.",
+  "main": "js/coffee-sprites.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "coffee --bare -o js coffee/coffee-sprites.coffee",
+    "test": "mocha --reporter spec --bail --ui bdd --colors --compilers coffee:coffee-script --require coffee-script test/test.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikesmullin/coffee-sprites.git"
+  },
+  "keywords": [
+    "coffee",
+    "css",
+    "stylesheet",
+    "stylesheets",
+    "image",
+    "sprite",
+    "sprites",
+    "spriting",
+    "plugin",
+    "fast",
+    "engine"
+  ],
+  "author": "Mike Smullin <mike@smullindesign.com>",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "chai": "~1.4.0",
+    "coffee-stylesheets": "0.0.1"
+  },
+  "dependencies": {
+    "node-gd": "~0.1.8",
+    "async2": "~0.1.0",
+    "glob": "~3.1.14"
+  }
+}
