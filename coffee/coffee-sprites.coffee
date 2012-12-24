@@ -1,24 +1,52 @@
 gd = require 'node-gd'
 async = require 'async2'
 fs = require 'fs'
+path = require 'path'
 instance = undefined
 
 class CoffeeSprites
   constructor: (o) ->
     o = o or {}
-    o.image_path = o.image_path or './'
-    o.sprite_path = o.sprite_path or './'
-    o.sprite_url = o.sprite_url or './'
+    o.image_path = o.image_path or ''
+    o.sprite_path = o.sprite_path or ''
+    o.sprite_url = o.sprite_url or ''
+    o.manifest_file = o.manifest_file or path.join o.sprite_path, 'sprite-manifest.json'
     @o = o
     @sprites = {}
     @flow = new async()
+    @read_manifest()
+
+  read_manifest: ->
+    _this = @
+    if fs.existsSync @o.manifest_file
+      data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
+      for name of data.sprites
+        @sprites[name] = new Sprite name, data.sprites[name].options
+        for i, file of data.sprites[name].images
+          ((file)->
+            _this.flow.serial ->
+              _this.sprites[name].add file, @
+          )(file)
+    return
+
+  write_manifest: ->
+    data =
+      sprites: {}
+    for name of @sprites
+      data.sprites[name] =
+        options: @sprites[name].o
+        images: []
+      for file of @sprites[name].images
+        data.sprites[name].images.push file
+    fs.writeFileSync @o.manifest_file, JSON.stringify data, null, 2
+    return
 
   extend: (engine) -> # CoffeeStylesheets instance
     g=engine.o.globals
 
     g.sprite_map = (name, options) =>
       sprite = new Sprite name, options
-      @sprites[sprite.name] = sprite
+      @sprites[name] = sprite
 
     generate_placeholder = (key, sprite, png) =>
       if typeof png isnt 'undefined'
@@ -69,6 +97,7 @@ class CoffeeSprites
           )(sprite)
         flow.finally =>
           # return final css
+          @write_manifest()
           done null, css
           return
         return
@@ -91,7 +120,7 @@ class Sprite
     @width = 0
     @height = 0
     @png = undefined
-    @digest = undefined
+    @digest = ''
     @o = o
     return
 
@@ -121,6 +150,10 @@ class Sprite
   render: (callback) ->
     # save sprite image
     sprite = @
+
+    return callback "sprite map was created but no images added" if sprite.width < 1
+
+    return callback "no change would occur" if fs.existsSync sprite.digest_file()
 
     # create new blank sprite canvas
     sprite.png = gd.createTrueColor sprite.width, sprite.height
@@ -180,7 +213,7 @@ class Image
     @png = undefined
     @height = undefined
     @width = undefined
-    @absfile = instance.o.image_path + @file + '.png'
+    @absfile = path.join instance.o.image_path, @file+'.png'
     @open (err) =>
       return callback err if err
       @height = @png.height

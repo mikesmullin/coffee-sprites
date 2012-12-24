@@ -1,0 +1,23 @@
+{
+  "sprites": {
+    "wigi": {
+      "options": {
+        "spacing": 10,
+        "repeat": "no-repeat"
+      },
+      "images": [
+        "fly-3",
+        "walk-1",
+        "walk-2",
+        "walk-3",
+        "run-1",
+        "run-2",
+        "run-3",
+        "fly-1",
+        "fly-2",
+        "fall",
+        "jump"
+      ]
+    }
+  }
+}
