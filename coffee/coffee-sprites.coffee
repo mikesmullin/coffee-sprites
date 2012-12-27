@@ -1,4 +1,4 @@
-gd = require 'node-gd'
+canvas = require 'canvas'
 async = require 'async2'
 fs = require 'fs'
 path = require 'path'
@@ -50,7 +50,8 @@ class CoffeeSprites
 
     generate_placeholder = (key, sprite, png) =>
       if typeof png isnt 'undefined'
-        @flow.series -> sprite.add png, @
+        @flow.series ->
+          sprite.add png, @
       "SPRITE_#{key}_PLACEHOLDER(#{sprite.name}, #{png or ''})"
 
     g.sprite = (sprite, png) ->
@@ -70,7 +71,8 @@ class CoffeeSprites
 
     # callback fired by engine.render()
     engine.on.end = (css, done) =>
-      @flow.finally =>
+      @flow.finally (err) =>
+        throw err if err
         # replace placeholders in css
         css = css.replace /SPRITE_(.+?)_PLACEHOLDER\((.+?), (.*?)\)/g, (match, key, name, png) =>
           sprite = @sprites[name]
@@ -119,7 +121,7 @@ class Sprite
     @y = 0
     @width = 0
     @height = 0
-    @png = undefined
+    @ctx = undefined
     @digest = ''
     @o = o
     return
@@ -131,8 +133,9 @@ class Sprite
       callback null
     else # new image not in sprite
       # calculate
-      image = @images[file] = new Image file, @x, @y, (err) =>
+      new Image file, @x, @y, (err, image) =>
         return callback err if err
+        image = @images[file] = image
         # TODO: allow repeat to dictate how cursor is incremented here; or do it all-at-once during render
         @width = Math.max @width, image.width
         @y = @height += image.height + (@o.spacing or 0)
@@ -156,12 +159,8 @@ class Sprite
     return callback "no change would occur" if fs.existsSync sprite.digest_file()
 
     # create new blank sprite canvas
-    sprite.png = gd.createTrueColor sprite.width, sprite.height
-    transparency = sprite.png.colorAllocateAlpha 0, 0, 0, 127
-    sprite.png.fill 0, 0, transparency
-    sprite.png.colorTransparent transparency
-    sprite.png.alphaBlending 0
-    sprite.png.saveAlpha 1
+    sprite.canvas = new canvas sprite.width, sprite.height
+    sprite.ctx = sprite.canvas.getContext '2d'
 
     # compile sprite in memory
     flow = new async()
@@ -174,13 +173,13 @@ class Sprite
             # TODO: support smart rendering for more compact image placement
             switch sprite.o.repeat
               when 'no-repeat'
-                image.png.copy sprite.png, image.x, image.y, 0, 0, image.width, image.height
+                sprite.ctx.drawImage image.src, 0, 0, image.width, image.height, image.x, image.y, image.width, image.height
               when 'repeat-x'
                 for x in [0..sprite.width] by image.width
-                  image.png.copy sprite.png, x, image.y, 0, 0, image.width, image.height
+                  sprite.ctx.drawImage image.src, 0, 0, image.width, image.height, x, image.y, image.width, image.height
               when 'repeat-y'
                 for y in [0..sprite.height] by image.height
-                  image.png.copy sprite.png, image.x, y, 0, 0, image.width, image.height
+                  sprite.ctx.drawImage image.src, 0, 0, image.width, image.height, image.x, y, image.width, image.height
             done()
             return
           return
@@ -193,7 +192,10 @@ class Sprite
         fs.unlinkSync file
 
       # override sprite png on disk
-      sprite.png.savePng sprite.digest_file(), 0, ->
+      out = fs.createWriteStream sprite.digest_file()
+      stream = sprite.canvas.createPNGStream()
+      stream.on 'data', (chunk) -> out.write chunk
+      stream.on 'end', ->
         console.log "Wrote #{sprite.digest_file().replace process.cwd() + '/', ''}."
         # TODO: add pngcrush here
         callback null, sprite.digest_file()
@@ -209,26 +211,28 @@ class Sprite
 
 
 class Image
-  constructor: (@file, @x, @y, callback) ->
-    @png = undefined
+  constructor: (@file, @x, @y, cb) ->
+    @src = undefined
     @height = undefined
     @width = undefined
     @absfile = path.join instance.o.image_path, @file+'.png'
     @open (err) =>
-      return callback err if err
-      @height = @png.height
-      @width  = @png.width
-      callback null
+      return cb err if err
+      @height = @src.height
+      @width = @src.width
+      cb null, @
     return
 
   toString: ->
     "Image#file=#{@file},x=#{@x},y=#{@y},width=#{@width},height=#{@height}"
 
-  open: (callback) ->
-    gd.openPng @absfile, (err, png) =>
-      return callback err if err
-      @png = png
-      callback null
+  open: (cb) ->
+    i = new canvas.Image
+    i.onload = =>
+      @src = i
+      cb null
+    i.onerror = cb
+    i.src = @absfile
 
   px: (i) ->
     if i is 0 then 0 else i + 'px'
