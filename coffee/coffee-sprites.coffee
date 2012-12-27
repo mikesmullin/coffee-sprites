@@ -1,4 +1,4 @@
-canvas = require 'canvas'
+gd = require 'node-gd'
 async = require 'async2'
 fs = require 'fs'
 path = require 'path'
@@ -121,20 +121,20 @@ class Sprite
     @y = 0
     @width = 0
     @height = 0
-    @ctx = undefined
+    @png = undefined
     @digest = ''
     @o = o
     return
 
-  add: (file, callback) ->
+  add: (file, cb) ->
     # if existing image within sprite
     unless typeof @images[file] is 'undefined'
       @images[file] # cached
-      callback null
+      cb null
     else # new image not in sprite
       # calculate
       new Image file, @x, @y, (err, image) =>
-        return callback err if err
+        return cb err if err
         image = @images[file] = image
         # TODO: allow repeat to dictate how cursor is incremented here; or do it all-at-once during render
         @width = Math.max @width, image.width
@@ -147,20 +147,24 @@ class Sprite
         for key, image of @images
           blob += image+'|'
         @digest = require('crypto').createHash('md5').update(blob).digest('hex').substr(-10)
-        callback null
+        cb null
     return
 
-  render: (callback) ->
+  render: (cb) ->
     # save sprite image
     sprite = @
 
-    return callback "sprite map was created but no images added" if sprite.width < 1
+    return cb "sprite map was created but no images added" if sprite.width < 1
 
-    return callback "no change would occur" if fs.existsSync sprite.digest_file()
+    return cb "no change would occur" if fs.existsSync sprite.digest_file()
 
     # create new blank sprite canvas
-    sprite.canvas = new canvas sprite.width, sprite.height
-    sprite.ctx = sprite.canvas.getContext '2d'
+    sprite.png = gd.createTrueColor sprite.width, sprite.height
+    transparency = sprite.png.colorAllocateAlpha 0, 0, 0, 127
+    sprite.png.fill 0, 0, transparency
+    sprite.png.colorTransparent transparency
+    sprite.png.alphaBlending 0
+    sprite.png.saveAlpha 1
 
     # compile sprite in memory
     flow = new async()
@@ -173,13 +177,13 @@ class Sprite
             # TODO: support smart rendering for more compact image placement
             switch sprite.o.repeat
               when 'no-repeat'
-                sprite.ctx.drawImage image.src, 0, 0, image.width, image.height, image.x, image.y, image.width, image.height
+                image.src.copy sprite.png, image.x, image.y, 0, 0, image.width, image.height
               when 'repeat-x'
                 for x in [0..sprite.width] by image.width
-                  sprite.ctx.drawImage image.src, 0, 0, image.width, image.height, x, image.y, image.width, image.height
+                  image.src.copy sprite.png, x, image.y, 0, 0, image.width, image.height
               when 'repeat-y'
                 for y in [0..sprite.height] by image.height
-                  sprite.ctx.drawImage image.src, 0, 0, image.width, image.height, image.x, y, image.width, image.height
+                  image.src.copy sprite.png, image.x, y, 0, 0, image.width, image.height
             done()
             return
           return
@@ -192,13 +196,10 @@ class Sprite
         fs.unlinkSync file
 
       # override sprite png on disk
-      out = fs.createWriteStream sprite.digest_file()
-      stream = sprite.canvas.createPNGStream()
-      stream.on 'data', (chunk) -> out.write chunk
-      stream.on 'end', ->
+      sprite.png.savePng sprite.digest_file(), 0, ->
         console.log "Wrote #{sprite.digest_file().replace process.cwd() + '/', ''}."
         # TODO: add pngcrush here
-        callback null, sprite.digest_file()
+        cb null, sprite.digest_file()
         return
       return
     return
@@ -227,12 +228,10 @@ class Image
     "Image#file=#{@file},x=#{@x},y=#{@y},width=#{@width},height=#{@height}"
 
   open: (cb) ->
-    i = new canvas.Image
-    i.onload = =>
-      @src = i
-      cb null
-    i.onerror = cb
-    i.src = @absfile
+    gd.openPng @absfile, (err, src) =>
+      return cb err if err
+      @src = src
+      cb null, @
 
   px: (i) ->
     if i is 0 then 0 else i + 'px'

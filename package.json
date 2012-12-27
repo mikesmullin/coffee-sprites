@@ -37,6 +37,6 @@
   "dependencies": {
     "async2": ">=0.0.1",
     "glob": ">=3.1.14",
-    "canvas": ">=0.13.1"
+    "node-gd": "~0.2.0"
   }
 }
