@@ -1,6 +1,6 @@
 {
   "name": "coffee-sprites",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "CoffeeScript/JavaScript stylesheet-based sprite image engine.",
   "main": "js/coffee-sprites.js",
   "directories": {
@@ -37,6 +37,6 @@
   "dependencies": {
     "async2": ">=0.0.1",
     "glob": ">=3.1.14",
-    "canvas": "~0.13.1"
+    "canvas": ">=0.13.1"
   }
 }
