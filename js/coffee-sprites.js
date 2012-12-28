@@ -26,22 +26,27 @@ CoffeeSprites = (function() {
   }
 
   CoffeeSprites.prototype.read_manifest = function() {
-    var data, file, i, name, _fn, _ref, _this;
+    var data, name, _fn, _this;
     _this = this;
     if (fs.existsSync(this.o.manifest_file)) {
       data = (JSON.parse(fs.readFileSync(this.o.manifest_file))) || {};
-      for (name in data.sprites) {
-        this.sprites[name] = new Sprite(name, data.sprites[name].options);
-        _ref = data.sprites[name].images;
-        _fn = function(file) {
-          return _this.flow.serial(function() {
-            return _this.sprites[name].add(file, this);
-          });
-        };
+      _fn = function(name, sprite) {
+        var file, i, _ref, _results;
+        _this.sprites[name] = new Sprite(name, sprite.options);
+        _ref = sprite.images;
+        _results = [];
         for (i in _ref) {
           file = _ref[i];
-          _fn(file);
+          _results.push((function(file) {
+            return _this.flow.serial(function() {
+              return _this.sprites[name].add(file, this);
+            });
+          })(file));
         }
+        return _results;
+      };
+      for (name in data.sprites) {
+        _fn(name, data.sprites[name]);
       }
     }
   };

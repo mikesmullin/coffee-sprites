@@ -21,12 +21,14 @@ class CoffeeSprites
     if fs.existsSync @o.manifest_file
       data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
       for name of data.sprites
-        @sprites[name] = new Sprite name, data.sprites[name].options
-        for i, file of data.sprites[name].images
-          ((file)->
-            _this.flow.serial ->
-              _this.sprites[name].add file, @
-          )(file)
+        ((name, sprite)->
+          _this.sprites[name] = new Sprite name, sprite.options
+          for i, file of sprite.images
+            ((file)->
+              _this.flow.serial ->
+                _this.sprites[name].add file, @
+            )(file)
+        )(name, data.sprites[name])
     return
 
   write_manifest: ->
