@@ -9,7 +9,7 @@ fs = require('fs');
 
 path = require('path');
 
-instance = void 0;
+instance = undefined;
 
 CoffeeSprites = (function() {
 
@@ -26,22 +26,22 @@ CoffeeSprites = (function() {
   }
 
   CoffeeSprites.prototype.read_manifest = function() {
-    var data, name, _fn, _this;
-    _this = this;
+    var data, name, _fn,
+      _this = this;
     if (fs.existsSync(this.o.manifest_file)) {
       data = (JSON.parse(fs.readFileSync(this.o.manifest_file))) || {};
       _fn = function(name, sprite) {
-        var file, i, _ref, _results;
+        var i, png, _ref, _results;
         _this.sprites[name] = new Sprite(name, sprite.options);
         _ref = sprite.images;
         _results = [];
         for (i in _ref) {
-          file = _ref[i];
-          _results.push((function(file) {
+          png = _ref[i];
+          _results.push((function(png) {
             return _this.flow.serial(function() {
-              return _this.sprites[name].add(file, this);
+              return _this.sprites[name].add(png, arguments[arguments.length - 1]);
             });
-          })(file));
+          })(png));
         }
         return _results;
       };
@@ -75,15 +75,16 @@ CoffeeSprites = (function() {
     g.sprite_map = function(name, options) {
       var sprite;
       sprite = new Sprite(name, options);
-      return _this.sprites[name] = sprite;
+      _this.sprites[name] = sprite;
+      return name;
     };
-    generate_placeholder = function(key, sprite, png) {
+    generate_placeholder = function(key, name, png) {
       if (typeof png !== 'undefined') {
         _this.flow.series(function() {
-          return sprite.add(png, this);
+          return _this.sprites[name].add(png, arguments[arguments.length - 1]);
         });
       }
-      return "SPRITE_" + key + "_PLACEHOLDER(" + sprite.name + ", " + (png || '') + ")";
+      return "SPRITE_" + key + "_PLACEHOLDER(" + name + ", " + (png || '') + ")";
     };
     g.sprite = function(sprite, png) {
       return generate_placeholder('URL_AND_IMAGE_POSITION', sprite, png);
@@ -163,7 +164,7 @@ Sprite = (function() {
     this.y = 0;
     this.width = 0;
     this.height = 0;
-    this.png = void 0;
+    this.png = undefined;
     this.digest = '';
     this.o = o;
     return;
@@ -172,15 +173,13 @@ Sprite = (function() {
   Sprite.prototype.add = function(file, cb) {
     var _this = this;
     if (typeof this.images[file] !== 'undefined') {
-      this.images[file];
-      cb(null);
+      cb(null, this.images[file]);
     } else {
-      new Image((this.o.path || '') + file, this.x, this.y, function(err, image) {
+      this.images[file] = new Image((this.o.path || '') + file, this.x, this.y, function(err, image) {
         var blob, key, _ref;
         if (err) {
           return cb(err);
         }
-        image = _this.images[file] = image;
         _this.width = Math.max(_this.width, image.width);
         _this.y = _this.height += image.height + (_this.o.spacing || 0);
         blob = '';
@@ -275,9 +274,9 @@ Image = (function() {
     this.file = file;
     this.x = x;
     this.y = y;
-    this.src = void 0;
-    this.height = void 0;
-    this.width = void 0;
+    this.src = undefined;
+    this.height = undefined;
+    this.width = undefined;
     this.absfile = path.join(instance.o.image_path, this.file + '.png');
     this.open(function(err) {
       if (err) {
@@ -287,7 +286,6 @@ Image = (function() {
       _this.width = _this.src.width;
       return cb(null, _this);
     });
-    return;
   }
 
   Image.prototype.toString = function() {

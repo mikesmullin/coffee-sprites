@@ -2,7 +2,7 @@ gd = require 'node-gd'
 async = require 'async2'
 fs = require 'fs'
 path = require 'path'
-instance = undefined
+instance = `undefined`
 
 class CoffeeSprites
   constructor: (o) ->
@@ -17,17 +17,16 @@ class CoffeeSprites
     @read_manifest()
 
   read_manifest: ->
-    _this = @
     if fs.existsSync @o.manifest_file
       data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
       for name of data.sprites
-        ((name, sprite)->
-          _this.sprites[name] = new Sprite name, sprite.options
-          for i, file of sprite.images
-            ((file)->
-              _this.flow.serial ->
-                _this.sprites[name].add file, @
-            )(file)
+        ((name, sprite) =>
+          @sprites[name] = new Sprite name, sprite.options
+          for i, png of sprite.images
+            ((png) =>
+              @flow.serial =>
+                @sprites[name].add png, arguments[arguments.length-1]
+            )(png)
         )(name, data.sprites[name])
     return
 
@@ -49,12 +48,13 @@ class CoffeeSprites
     g.sprite_map = (name, options) =>
       sprite = new Sprite name, options
       @sprites[name] = sprite
+      return name
 
-    generate_placeholder = (key, sprite, png) =>
+    generate_placeholder = (key, name, png) =>
       if typeof png isnt 'undefined'
-        @flow.series ->
-          sprite.add png, @
-      "SPRITE_#{key}_PLACEHOLDER(#{sprite.name}, #{png or ''})"
+        @flow.series =>
+          @sprites[name].add png, arguments[arguments.length-1]
+      "SPRITE_#{key}_PLACEHOLDER(#{name}, #{png or ''})"
 
     g.sprite = (sprite, png) ->
       generate_placeholder 'URL_AND_IMAGE_POSITION', sprite, png
@@ -123,7 +123,7 @@ class Sprite
     @y = 0
     @width = 0
     @height = 0
-    @png = undefined
+    @png = `undefined`
     @digest = ''
     @o = o
     return
@@ -131,13 +131,11 @@ class Sprite
   add: (file, cb) ->
     # if existing image within sprite
     unless typeof @images[file] is 'undefined'
-      @images[file] # cached
-      cb null
+      cb null, @images[file] # cached
     else # new image not in sprite
       # calculate
-      new Image (@o.path or '') + file, @x, @y, (err, image) =>
+      @images[file] = new Image (@o.path or '') + file, @x, @y, (err, image) =>
         return cb err if err
-        image = @images[file] = image
         # TODO: allow repeat to dictate how cursor is incremented here; or do it all-at-once during render
         @width = Math.max @width, image.width
         @y = @height += image.height + (@o.spacing or 0)
@@ -215,16 +213,15 @@ class Sprite
 
 class Image
   constructor: (@file, @x, @y, cb) ->
-    @src = undefined
-    @height = undefined
-    @width = undefined
+    @src = `undefined`
+    @height = `undefined`
+    @width = `undefined`
     @absfile = path.join instance.o.image_path, @file+'.png'
     @open (err) =>
       return cb err if err
       @height = @src.height
       @width = @src.width
       cb null, @
-    return
 
   toString: ->
     "Image#file=#{@file},x=#{@x},y=#{@y},width=#{@width},height=#{@height}"
