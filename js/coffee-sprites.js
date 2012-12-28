@@ -175,7 +175,7 @@ Sprite = (function() {
       this.images[file];
       cb(null);
     } else {
-      new Image(file, this.x, this.y, function(err, image) {
+      new Image((this.o.path || '') + file, this.x, this.y, function(err, image) {
         var blob, key, _ref;
         if (err) {
           return cb(err);

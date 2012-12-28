@@ -135,7 +135,7 @@ class Sprite
       cb null
     else # new image not in sprite
       # calculate
-      new Image file, @x, @y, (err, image) =>
+      new Image (@o.path or '') + file, @x, @y, (err, image) =>
         return cb err if err
         image = @images[file] = image
         # TODO: allow repeat to dictate how cursor is incremented here; or do it all-at-once during render
