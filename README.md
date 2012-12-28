@@ -7,10 +7,10 @@ within your `*.css.coffee` markup to automatically fetch images and generate css
 If you come from the Ruby on Rails community, you will immediately recognize conventions from Spriting
 with [Compass](http://compass-style.org/help/tutorials/spriting/)/SASS, originally [Lemonade](http://www.hagenburger.net/BLOG/Lemonade-CSS-Sprites-for-Sass-Compass.html).
 
-## Install
+## Installation on Debian/Ubuntu
 
 ```bash
-sudo apt-get install libgd2-xpm-dev # on ubuntu; a libgd dependency
+sudo apt-get install libgd2-xpm-dev # libgd; the node-gd dependency
 npm install coffee-sprites
 ```
 
