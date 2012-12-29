@@ -1,52 +1,37 @@
 * {
   margin: 0;
   padding: 0;
-  font-size: 1em;
-}
+  font-size: 1em; }
 html,
 body {
-  height: 100%;
-}
+  height: 100%; }
 body {
   background: #eee;
   color: #333;
-  margin: 20px;
-}
+  margin: 20px; }
 #wigi {
   background: url(./wigi-2e192be7fd.png) no-repeat;
   height: 112px;
-  width: 96px;
-}
+  width: 96px; }
 #wigi.wigi-0 {
-  background-position: 0 -122px;
-}
+  background-position: 0 -122px; }
 #wigi.wigi-1 {
-  background-position: 0 -244px;
-}
+  background-position: 0 -244px; }
 #wigi.wigi-2 {
-  background-position: 0 -366px;
-}
+  background-position: 0 -366px; }
 #wigi.wigi-3 {
-  background-position: 0 -484px;
-}
+  background-position: 0 -484px; }
 #wigi.wigi-4 {
-  background-position: 0 -606px;
-}
+  background-position: 0 -606px; }
 #wigi.wigi-5 {
-  background-position: 0 -728px;
-}
+  background-position: 0 -728px; }
 #wigi.wigi-6 {
-  background-position: 0 -850px;
-}
+  background-position: 0 -850px; }
 #wigi.wigi-7 {
-  background-position: 0 -968px;
-}
+  background-position: 0 -968px; }
 #wigi.wigi-8 {
-  background-position: 0 0;
-}
+  background-position: 0 0; }
 #wigi.wigi-9 {
-  background-position: 0 -1086px;
-}
+  background-position: 0 -1086px; }
 #wigi.wigi-10 {
-  background-position: 0 -1208px;
-}
+  background-position: 0 -1208px; }
