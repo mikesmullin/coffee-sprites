@@ -256,11 +256,11 @@ Sprite = (function() {
   };
 
   Sprite.prototype.digest_file = function() {
-    return instance.o.sprite_path + this.name + '-' + this.digest + '.png';
+    return path.join(instance.o.sprite_path, "" + this.name + "-" + this.digest + ".png");
   };
 
   Sprite.prototype.digest_url = function() {
-    return instance.o.sprite_url + this.name + '-' + this.digest + '.png';
+    return path.join(instance.o.sprite_url, "" + this.name + "-" + this.digest + ".png");
   };
 
   return Sprite;

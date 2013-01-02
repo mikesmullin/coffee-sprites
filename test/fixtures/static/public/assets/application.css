@@ -1,37 +1,52 @@
+/* line 4 */
 * {
   margin: 0;
   padding: 0;
   font-size: 1em; }
+/* line 9 */
 html,
 body {
   height: 100%; }
+/* line 12 */
 body {
   background: #eee;
   color: #333;
   margin: 20px; }
+/* line 20 */
 #wigi {
-  background: url(./wigi-2e192be7fd.png) no-repeat;
+  background: url(wigi-2e192be7fd.png) no-repeat;
   height: 112px;
   width: 96px; }
+/* line 29 */
 #wigi.wigi-0 {
   background-position: 0 -122px; }
+/* line 29 */
 #wigi.wigi-1 {
   background-position: 0 -244px; }
+/* line 29 */
 #wigi.wigi-2 {
   background-position: 0 -366px; }
+/* line 29 */
 #wigi.wigi-3 {
   background-position: 0 -484px; }
+/* line 29 */
 #wigi.wigi-4 {
   background-position: 0 -606px; }
+/* line 29 */
 #wigi.wigi-5 {
   background-position: 0 -728px; }
+/* line 29 */
 #wigi.wigi-6 {
   background-position: 0 -850px; }
+/* line 29 */
 #wigi.wigi-7 {
   background-position: 0 -968px; }
+/* line 29 */
 #wigi.wigi-8 {
   background-position: 0 0; }
+/* line 29 */
 #wigi.wigi-9 {
   background-position: 0 -1086px; }
+/* line 29 */
 #wigi.wigi-10 {
   background-position: 0 -1208px; }

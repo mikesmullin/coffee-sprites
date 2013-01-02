@@ -205,10 +205,10 @@ class Sprite
     return
 
   digest_file: ->
-    instance.o.sprite_path + @name + '-' + @digest + '.png'
+    path.join instance.o.sprite_path, "#{@name}-#{@digest}.png"
 
   digest_url: ->
-    instance.o.sprite_url + @name + '-' + @digest + '.png'
+    path.join instance.o.sprite_url, "#{@name}-#{@digest}.png"
 
 
 class Image
