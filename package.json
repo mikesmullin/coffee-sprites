@@ -1,6 +1,6 @@
 {
   "name": "coffee-sprites",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "CoffeeScript/JavaScript stylesheet-based sprite image engine.",
   "main": "js/coffee-sprites.js",
   "directories": {
@@ -31,12 +31,12 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "chai": "~1.4.0",
-    "coffee-stylesheets": ">=0.0.1"
+    "chai": "*",
+    "coffee-stylesheets": "https://github.com/mikesmullin/coffee-stylesheets/tarball/stable"
   },
   "dependencies": {
-    "node-gd": ">=0.2.1",
-    "async2": ">=0.0.1",
-    "glob": ">=3.1.14"
+    "node-gd": "https://github.com/mikesmullin/node-gd/tarball/stable",
+    "async2": "https://github.com/mikesmullin/async2/tarball/stable",
+    "glob": "*"
   }
 }

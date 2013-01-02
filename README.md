@@ -90,9 +90,9 @@ Will output CSS like this:
 
 And the sprite image(s) will turn out like this:
 
- * [test/fixtures/static/public/assets/wigi-2e192be7fd.png](https://github.com/mikesmullin/coffee-sprites/blob/production/test/fixtures/static/public/assets/wigi-2e192be7fd.png)
+ * [test/fixtures/static/public/assets/wigi-2e192be7fd.png](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/static/public/assets/wigi-2e192be7fd.png)
 
-For the very latest and most comprehensive example, see [test/fixtures/precompile/assets/stylesheets/application.css.coffee](https://github.com/mikesmullin/coffee-sprites/blob/production/test/fixtures/precompile/assets/stylesheets/application.css.coffee).
+For the very latest and most comprehensive example, see [test/fixtures/precompile/assets/stylesheets/application.css.coffee](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/precompile/assets/stylesheets/application.css.coffee).
 
 ## Test
 
