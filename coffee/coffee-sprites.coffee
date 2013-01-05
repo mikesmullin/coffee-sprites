@@ -18,12 +18,21 @@ class CoffeeSprites
 
   read_manifest: ->
     if fs.existsSync @o.manifest_file
+      console.log "reading manifest..."
       data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
+      console.log "iterating sprites..."
       for name, sprite of data.sprites
+        console.log name
         @sprites[name] = new Sprite name, sprite.options
+        console.log "  images:"
         for i, file of sprite.images
-          if fs.existsSync path.join instance.o.image_path, (sprite.path or ''), file+'.png'
+          abspath = path.join @o.image_path, (sprite.options.path or ''), file+'.png'
+          console.log abspath
+          if fs.existsSync abspath
             @sprites[name].add file
+          else
+            console.log "DOESNT EXIST"
+        #console.log @sprites[name]
     return
 
   write_manifest: ->
@@ -49,6 +58,7 @@ class CoffeeSprites
     # TODO: add validation to ensure these functions are never permitted
     #       to be called with invalid arguments
     g.sprite_map = (name, options) =>
+      return name if @sprites[name] # share instances by same name
       sprite = new Sprite name, options
       @sprites[name] = sprite
       return name
@@ -234,7 +244,7 @@ class Sprite
         tileset.digest = sprite.calc_digest type
         different &= not fs.existsSync tileset.digest_file = sprite.digest_file type
 
-      return cb "no change would occur" unless different
+      #return cb "no change would occur" unless different
       render_to_disk()
 
     # create up to four new blank sprite canvases
@@ -286,8 +296,8 @@ class Sprite
                 console.log ''+err
                 return next err if err
               p.on 'exit', (code) ->
-                return next "pngcrush exited with code #{code}" if code isnt 0
                 fs.unlinkSync suffixed
+                return next "pngcrush exited with code #{code}" if code isnt 0
                 return next null
             else
               return next null

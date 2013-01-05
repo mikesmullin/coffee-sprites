@@ -111,27 +111,16 @@ body {
   background-position: -204px -204px; }
 /* line 53 */
 div.x1 {
-  background: url(world-x-67a046afea.png) 0 0 repeat-x;
+  background: url(world-x-86299701a7.png) 0 0 repeat-x;
   height: 64px;
   width: 100%; }
 /* line 58 */
-div.x2 {
-  background: url(world-x-67a046afea.png) 0 -68px repeat-x;
-  height: 64px;
-  width: 100%; }
-/* line 63 */
-div.y1 {
-  float: left;
-  background: url(world-y-eac9d8495d.png) -68px 0 repeat-y;
-  width: 64px;
-  height: 320px; }
-/* line 69 */
 div.y2 {
   float: left;
-  background: url(world-y-eac9d8495d.png) 0 0 repeat-y;
+  background: url(world-y-b376a5aaa5.png) 0 0 repeat-y;
   width: 64px;
   height: 320px; }
-/* line 75 */
+/* line 64 */
 div.xy {
   background: url(brick-4-xy-4259a7b606.png) 0 0 repeat;
   width: 320px;

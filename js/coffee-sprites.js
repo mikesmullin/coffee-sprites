@@ -27,18 +27,26 @@ CoffeeSprites = (function() {
   }
 
   CoffeeSprites.prototype.read_manifest = function() {
-    var data, file, i, name, sprite, _ref, _ref1;
+    var abspath, data, file, i, name, sprite, _ref, _ref1;
     if (fs.existsSync(this.o.manifest_file)) {
+      console.log("reading manifest...");
       data = (JSON.parse(fs.readFileSync(this.o.manifest_file))) || {};
+      console.log("iterating sprites...");
       _ref = data.sprites;
       for (name in _ref) {
         sprite = _ref[name];
+        console.log(name);
         this.sprites[name] = new Sprite(name, sprite.options);
+        console.log("  images:");
         _ref1 = sprite.images;
         for (i in _ref1) {
           file = _ref1[i];
-          if (fs.existsSync(path.join(instance.o.image_path, sprite.path || '', file + '.png'))) {
+          abspath = path.join(this.o.image_path, sprite.options.path || '', file + '.png');
+          console.log(abspath);
+          if (fs.existsSync(abspath)) {
             this.sprites[name].add(file);
+          } else {
+            console.log("DOESNT EXIST");
           }
         }
       }
@@ -74,6 +82,9 @@ CoffeeSprites = (function() {
     };
     g.sprite_map = function(name, options) {
       var sprite;
+      if (_this.sprites[name]) {
+        return name;
+      }
       sprite = new Sprite(name, options);
       _this.sprites[name] = sprite;
       return name;
@@ -359,9 +370,6 @@ Sprite = (function() {
         tileset.digest = sprite.calc_digest(type);
         different &= !fs.existsSync(tileset.digest_file = sprite.digest_file(type));
       }
-      if (!different) {
-        return cb("no change would occur");
-      }
       return render_to_disk();
     };
     render_to_disk = function() {
@@ -421,10 +429,10 @@ Sprite = (function() {
                     }
                   });
                   return p.on('exit', function(code) {
+                    fs.unlinkSync(suffixed);
                     if (code !== 0) {
                       return next("pngcrush exited with code " + code);
                     }
-                    fs.unlinkSync(suffixed);
                     return next(null);
                   });
                 } else {

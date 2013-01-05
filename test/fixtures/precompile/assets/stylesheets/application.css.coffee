@@ -37,15 +37,6 @@ module.exports = stylesheet = ->
     background "#{sprite world, 'cloud-1-x'} repeat-x"
     height sprite_height world, 'cloud-1-x'
     width '100%'
-  div '.x2', ->
-    background "#{sprite world, 'brick-1-xy'} repeat-x"
-    height sprite_height world, 'brick-1-xy'
-    width '100%'
-  div '.y1', ->
-    float 'left'
-    background "#{sprite world, 'brick-2-xy'} repeat-y"
-    width sprite_width world, 'brick-2-xy'
-    height '320px'
   div '.y2', ->
     float 'left'
     background "#{sprite world, 'brick-3-xy'} repeat-y"

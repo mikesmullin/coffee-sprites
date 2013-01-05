@@ -7,8 +7,8 @@ exec = require('child_process').exec
 fixtures_path = path.join __dirname, 'fixtures'
 stylesheet = `undefined`
 engine = `undefined`
-infile = path.join fixtures_path, 'precompile', 'assets', 'stylesheets', 'application.css.coffee'
-outfile = path.join fixtures_path, 'static', 'public', 'assets', 'application.css'
+inpath = path.join fixtures_path, 'precompile', 'assets', 'stylesheets'
+outpath = path.join fixtures_path, 'static', 'public', 'assets'
 
 describe 'CoffeeSprites', ->
   beforeEach (done) ->
@@ -23,14 +23,24 @@ describe 'CoffeeSprites', ->
         pngcrush: pngcrush
       done()
 
-  afterEach ->
+  after ->
     console.log "now do a visual check in Google Chrome to ensure sanity"
     exec "google-chrome #{__dirname}/fixtures/static/public/index.html"
 
   it 'compiles sprites with .css.coffee, outputting sprite PNGs to given path', (done) ->
-    stylesheet = require infile
+    stylesheet = require path.join inpath, 'application.css.coffee'
     css = engine.render stylesheet, (err, css) ->
+      outfile = path.join outpath, 'application.css'
       throw err if err
       fs.writeFileSync outfile, css
-      assert.ok fs.existsSync
+      assert.ok fs.existsSync outfile
+      done()
+
+  it 'compiles sprites across .css.coffee files, outputting to same PNGs', (done) ->
+    stylesheet = require path.join inpath, 'other.css.coffee'
+    css = engine.render stylesheet, (err, css) ->
+      outfile = path.join outpath, 'other.css'
+      throw err if err
+      fs.writeFileSync outfile, css
+      assert.ok fs.existsSync outfile
       done()
