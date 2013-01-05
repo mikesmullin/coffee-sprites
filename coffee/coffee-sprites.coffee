@@ -4,13 +4,16 @@ fs = require 'fs'
 path = require 'path'
 instance = `undefined`
 spawn = require('child_process').spawn
+log = (i,m) -> l=instance.o.logger; (l.length is 2 and not l i,m) or l m; return
 
 class CoffeeSprites
   constructor: (o) ->
+    instance = @
     o = o or {}
     o.image_path = o.image_path or ''
     o.sprite_path = o.sprite_path or ''
     o.sprite_url = o.sprite_url or ''
+    o.logger = o.logger or console.log
     o.manifest_file = o.manifest_file or path.join o.sprite_path, 'sprite-manifest.json'
     @o = o
     @reset()
@@ -44,6 +47,7 @@ class CoffeeSprites
       for file of @sprites[name].images
         data.sprites[name].images.push file
     fs.writeFileSync @o.manifest_file, JSON.stringify data, null, 2
+    log 'success', "wrote #{path.relative process.cwd(), @o.manifest_file}."
     return
 
   extend: (engine) -> # CoffeeStylesheets instance
@@ -90,8 +94,8 @@ class CoffeeSprites
       flow = new async()
       for name, sprite of @sprites
         ((sprite)-> flow.series -> sprite.render @)(sprite)
-      flow.finally (err) =>
-        cb err if err
+      flow.finally (err, changes) =>
+        return cb err if err
         # replace placeholders in css
         css = css.replace /SPRITE_(.+?)_PLACEHOLDER\((.+?), (.*?)\)/g, (match, key, name, png) =>
           sprite = @sprites[name]
@@ -191,7 +195,7 @@ class Sprite
 
   render: (cb) ->
     sprite = @
-    return cb "sprite map was created but no images added" if sprite.images.length < 1
+    return cb null, "sprite map \"#{sprite.name}\" has no images." if sprite.images.length < 1
 
     # read image w, h dimensions
     read = =>
@@ -207,7 +211,7 @@ class Sprite
     # grouped by tileset
     position_and_pack = =>
       sprite.o.spacing = sprite.o.spacing or 0
-      different = true
+      changes = true
       for type, tileset of sprite.tilesets
         if type is 'smart' # means 2d binary packing algorithm
           for k, image of tileset.images
@@ -250,9 +254,9 @@ class Sprite
             image.y = tileset.h
             tileset.h += image.h + sprite.o.spacing
         tileset.digest = sprite.calc_digest type
-        different &= not fs.existsSync tileset.digest_file = sprite.digest_file type
+        changes &= not fs.existsSync tileset.digest_file = sprite.digest_file type
 
-      #return cb "no change would occur" unless different
+      return cb null, "no changes in sprite(s)." unless changes
       render_to_disk()
 
     # create up to four new blank sprite canvases
@@ -268,9 +272,11 @@ class Sprite
           tileset.src.colorTransparent transparency
           tileset.src.alphaBlending 0
           tileset.src.saveAlpha 1
+          count = 0
 
           # compile sprite tileset in memory
           for k, image of tileset.images
+            count++
             switch type
               when 'no-repeat', 'smart'
                 image.src.copy tileset.src, image.x, image.y, 0, 0, image.w, image.h
@@ -290,12 +296,12 @@ class Sprite
             fs.unlinkSync file
 
           # override sprite png on disk
-          console.log "Writing #{path.relative process.cwd(), tileset.digest_file}."
           suffixed = tileset.digest_file+'.tmp'
           tileset.src.savePng suffixed, 0, =>
-
+            log 'success', "wrote #{count} images to #{path.relative process.cwd(), tileset.digest_file}."
             # optimize png
             if instance.o.pngcrush
+              log 'pending', "PNGCrushing #{path.relative process.cwd(), tileset.digest_file}..."
               p = spawn instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]
               stdout = ''
               p.stdout.on 'data', (data) ->
@@ -303,11 +309,11 @@ class Sprite
               p.stderr.on 'data', (err) ->
                 return next err if err
               p.on 'exit', (code) ->
-                fs.unlinkSync suffixed
+                fs.unlinkSync suffixed if fs.existsSync suffixed
                 return next "pngcrush exited with code #{code}. #{stdout}" if code isnt 0
-                return next null
+                return next null, true
             else
-              return next null
+              return next null, true
 
         )(type, tileset)
       flow.finally (err) ->
@@ -339,7 +345,7 @@ class Sprite
     path.join instance.o.sprite_url, "#{@name}#{@suffix type}-#{@tilesets[type].digest}.png"
 
 module.exports = (options) ->
-  instance = new CoffeeSprites options
+  new CoffeeSprites options
   (engine) ->
     instance.extend engine
     instance
