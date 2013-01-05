@@ -16,32 +16,25 @@ class CoffeeSprites
     @reset()
 
   reset: ->
-    console.log "\n\n==> RESET"
     @sprites = {}
     @_read_manifest = false
 
   read_manifest: ->
     # read first time only
     # call reset() to permit reading again
-    console.log "\n\n==> WOULD READ"
     unless @_read_manifest
-      console.log "\n\n==> READ"
       @_read_manifest = true
       if fs.existsSync @o.manifest_file
-        console.log "\n\nreading manifest..."
         data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
         for name, sprite of data.sprites
-          console.log name
           @sprites[name] = new Sprite name, sprite.options
           for i, file of sprite.images
             abspath = path.join @o.image_path, (sprite.options.path or ''), file+'.png'
-            console.log abspath
             if fs.existsSync abspath
               @sprites[name].add file
     return
 
   write_manifest: ->
-    console.log "\n\n==> WRITE"
     data =
       sprites: {}
     for name of @sprites
@@ -204,9 +197,7 @@ class Sprite
     read = =>
       flow = async.new()
       for type, tileset of sprite.tilesets
-        console.log "asked to render sprite #{sprite.name} tileset #{type} with images:"
         for k, image of tileset.images
-          console.log "  "+image.basename()
           ((image)-> flow.series -> image.read @)(image)
       flow.finally (err) ->
         return cb err if err
@@ -306,15 +297,14 @@ class Sprite
             # optimize png
             if instance.o.pngcrush
               p = spawn instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]
-              #p = spawn path.join(process.cwd(), 'test', 'pngcrush.sh'), [suffixed, tileset.digest_file]
+              stdout = ''
               p.stdout.on 'data', (data) ->
-                #console.log ''+data
+                stdout = data
               p.stderr.on 'data', (err) ->
-                console.log ''+err
                 return next err if err
               p.on 'exit', (code) ->
                 fs.unlinkSync suffixed
-                return next "pngcrush exited with code #{code}" if code isnt 0
+                return next "pngcrush exited with code #{code}. #{stdout}" if code isnt 0
                 return next null
             else
               return next null

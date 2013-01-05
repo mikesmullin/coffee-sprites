@@ -26,30 +26,24 @@ CoffeeSprites = (function() {
   }
 
   CoffeeSprites.prototype.reset = function() {
-    console.log("\n\n==> RESET");
     this.sprites = {};
     return this._read_manifest = false;
   };
 
   CoffeeSprites.prototype.read_manifest = function() {
     var abspath, data, file, i, name, sprite, _ref, _ref1;
-    console.log("\n\n==> WOULD READ");
     if (!this._read_manifest) {
-      console.log("\n\n==> READ");
       this._read_manifest = true;
       if (fs.existsSync(this.o.manifest_file)) {
-        console.log("\n\nreading manifest...");
         data = (JSON.parse(fs.readFileSync(this.o.manifest_file))) || {};
         _ref = data.sprites;
         for (name in _ref) {
           sprite = _ref[name];
-          console.log(name);
           this.sprites[name] = new Sprite(name, sprite.options);
           _ref1 = sprite.images;
           for (i in _ref1) {
             file = _ref1[i];
             abspath = path.join(this.o.image_path, sprite.options.path || '', file + '.png');
-            console.log(abspath);
             if (fs.existsSync(abspath)) {
               this.sprites[name].add(file);
             }
@@ -61,7 +55,6 @@ CoffeeSprites = (function() {
 
   CoffeeSprites.prototype.write_manifest = function() {
     var data, file, name;
-    console.log("\n\n==> WRITE");
     data = {
       sprites: {}
     };
@@ -286,7 +279,6 @@ Sprite = (function() {
       _ref = sprite.tilesets;
       for (type in _ref) {
         tileset = _ref[type];
-        console.log("asked to render sprite " + sprite.name + " tileset " + type + " with images:");
         _ref1 = tileset.images;
         _fn = function(image) {
           return flow.series(function() {
@@ -295,7 +287,6 @@ Sprite = (function() {
         };
         for (k in _ref1) {
           image = _ref1[k];
-          console.log("  " + image.basename());
           _fn(image);
         }
       }
@@ -434,12 +425,14 @@ Sprite = (function() {
               console.log("Writing " + (path.relative(process.cwd(), tileset.digest_file)) + ".");
               suffixed = tileset.digest_file + '.tmp';
               return tileset.src.savePng(suffixed, 0, function() {
-                var p;
+                var p, stdout;
                 if (instance.o.pngcrush) {
                   p = spawn(instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]);
-                  p.stdout.on('data', function(data) {});
+                  stdout = '';
+                  p.stdout.on('data', function(data) {
+                    return stdout = data;
+                  });
                   p.stderr.on('data', function(err) {
-                    console.log('' + err);
                     if (err) {
                       return next(err);
                     }
@@ -447,7 +440,7 @@ Sprite = (function() {
                   return p.on('exit', function(code) {
                     fs.unlinkSync(suffixed);
                     if (code !== 0) {
-                      return next("pngcrush exited with code " + code);
+                      return next("pngcrush exited with code " + code + ". " + stdout);
                     }
                     return next(null);
                   });
