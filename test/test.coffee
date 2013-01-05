@@ -23,24 +23,30 @@ describe 'CoffeeSprites', ->
         pngcrush: pngcrush
       done()
 
+  render_to_disk = (stylesheet, file, cb) ->
+    css = engine.render stylesheet, (err, css) ->
+      throw err if err
+      outfile = path.join outpath, file
+      fs.writeFileSync outfile, css
+      assert.ok fs.existsSync outfile
+      cb()
+
   after ->
     console.log "now do a visual check in Google Chrome to ensure sanity"
     exec "google-chrome #{__dirname}/fixtures/static/public/index.html"
 
   it 'compiles sprites with .css.coffee, outputting sprite PNGs to given path', (done) ->
     stylesheet = require path.join inpath, 'application.css.coffee'
-    css = engine.render stylesheet, (err, css) ->
-      outfile = path.join outpath, 'application.css'
-      throw err if err
-      fs.writeFileSync outfile, css
-      assert.ok fs.existsSync outfile
-      done()
+    render_to_disk stylesheet, 'application.css', done
 
   it 'compiles sprites across .css.coffee files, outputting to same PNGs', (done) ->
     stylesheet = require path.join inpath, 'other.css.coffee'
-    css = engine.render stylesheet, (err, css) ->
-      outfile = path.join outpath, 'other.css'
-      throw err if err
-      fs.writeFileSync outfile, css
-      assert.ok fs.existsSync outfile
-      done()
+    render_to_disk stylesheet, 'other.css', ->
+      # as long as you re-save the files before it
+      # note: this only has to happen the first time
+      # once the manifest.json has all the images defined
+      # then a change in any .css file will generate all
+      # sprite images between all files
+      stylesheet = require path.join inpath, 'application.css.coffee'
+      render_to_disk stylesheet, 'application.css', done
+

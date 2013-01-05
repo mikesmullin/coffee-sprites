@@ -22,31 +22,37 @@ CoffeeSprites = (function() {
     o.sprite_url = o.sprite_url || '';
     o.manifest_file = o.manifest_file || path.join(o.sprite_path, 'sprite-manifest.json');
     this.o = o;
-    this.sprites = {};
-    this.read_manifest();
+    this.reset();
   }
+
+  CoffeeSprites.prototype.reset = function() {
+    console.log("\n\n==> RESET");
+    this.sprites = {};
+    return this._read_manifest = false;
+  };
 
   CoffeeSprites.prototype.read_manifest = function() {
     var abspath, data, file, i, name, sprite, _ref, _ref1;
-    if (fs.existsSync(this.o.manifest_file)) {
-      console.log("reading manifest...");
-      data = (JSON.parse(fs.readFileSync(this.o.manifest_file))) || {};
-      console.log("iterating sprites...");
-      _ref = data.sprites;
-      for (name in _ref) {
-        sprite = _ref[name];
-        console.log(name);
-        this.sprites[name] = new Sprite(name, sprite.options);
-        console.log("  images:");
-        _ref1 = sprite.images;
-        for (i in _ref1) {
-          file = _ref1[i];
-          abspath = path.join(this.o.image_path, sprite.options.path || '', file + '.png');
-          console.log(abspath);
-          if (fs.existsSync(abspath)) {
-            this.sprites[name].add(file);
-          } else {
-            console.log("DOESNT EXIST");
+    console.log("\n\n==> WOULD READ");
+    if (!this._read_manifest) {
+      console.log("\n\n==> READ");
+      this._read_manifest = true;
+      if (fs.existsSync(this.o.manifest_file)) {
+        console.log("\n\nreading manifest...");
+        data = (JSON.parse(fs.readFileSync(this.o.manifest_file))) || {};
+        _ref = data.sprites;
+        for (name in _ref) {
+          sprite = _ref[name];
+          console.log(name);
+          this.sprites[name] = new Sprite(name, sprite.options);
+          _ref1 = sprite.images;
+          for (i in _ref1) {
+            file = _ref1[i];
+            abspath = path.join(this.o.image_path, sprite.options.path || '', file + '.png');
+            console.log(abspath);
+            if (fs.existsSync(abspath)) {
+              this.sprites[name].add(file);
+            }
           }
         }
       }
@@ -55,6 +61,7 @@ CoffeeSprites = (function() {
 
   CoffeeSprites.prototype.write_manifest = function() {
     var data, file, name;
+    console.log("\n\n==> WRITE");
     data = {
       sprites: {}
     };
@@ -75,18 +82,23 @@ CoffeeSprites = (function() {
       _this = this;
     g = engine.o.globals;
     generate_placeholder = function(key, name, png) {
+      _this.read_manifest();
       if (typeof png !== 'undefined') {
         _this.sprites[name].add(png);
       }
       return "SPRITE_" + key + "_PLACEHOLDER(" + name + ", " + (png || '') + ")";
     };
     g.sprite_map = function(name, options) {
-      var sprite;
+      var k, sprite;
+      _this.read_manifest();
       if (_this.sprites[name]) {
-        return name;
+        for (k in options) {
+          _this.sprites[name].o[k] = options[k];
+        }
+      } else {
+        sprite = new Sprite(name, options);
+        _this.sprites[name] = sprite;
       }
-      sprite = new Sprite(name, options);
-      _this.sprites[name] = sprite;
       return name;
     };
     g.sprite = function(sprite, png) {
@@ -139,6 +151,7 @@ CoffeeSprites = (function() {
           }
         });
         _this.write_manifest();
+        instance.reset();
         cb(null, css);
       });
     };
@@ -234,6 +247,7 @@ Sprite = (function() {
     o.layout = o.layout || 'smart';
     this.images = {};
     this.tilesets = {};
+    this.tileset_types = ['smart', 'no-repeat', 'repeat-x', 'repeat-y'];
     this.digest = '';
     this.o = o;
     return;
@@ -272,6 +286,7 @@ Sprite = (function() {
       _ref = sprite.tilesets;
       for (type in _ref) {
         tileset = _ref[type];
+        console.log("asked to render sprite " + sprite.name + " tileset " + type + " with images:");
         _ref1 = tileset.images;
         _fn = function(image) {
           return flow.series(function() {
@@ -280,6 +295,7 @@ Sprite = (function() {
         };
         for (k in _ref1) {
           image = _ref1[k];
+          console.log("  " + image.basename());
           _fn(image);
         }
       }
@@ -375,7 +391,7 @@ Sprite = (function() {
     render_to_disk = function() {
       var flow, k, tileset, type, _ref;
       flow = new async;
-      _ref = ['smart', 'no-repeat', 'repeat-x', 'repeat-y'];
+      _ref = sprite.tileset_types;
       for (k in _ref) {
         type = _ref[k];
         if (tileset = sprite.tilesets[type]) {
@@ -454,17 +470,21 @@ Sprite = (function() {
   };
 
   Sprite.prototype.calc_digest = function(type) {
-    var blob, image, k, _ref;
-    blob = '';
+    var b, image, k, _ref;
+    b = {
+      o: [],
+      i: []
+    };
     for (k in this.o) {
-      blob += '' + k + ':' + this.o[k] + '|';
+      b.o.push(k + ':' + this.o[k]);
     }
     _ref = this.tilesets[type].images;
     for (k in _ref) {
       image = _ref[k];
-      blob += image + '|';
+      b.i.push(image.basename());
     }
-    return require('crypto').createHash('md5').update(blob).digest('hex').substr(-10);
+    b = b.o.sort().join('|') + '|' + b.i.sort().join('|');
+    return require('crypto').createHash('md5').update(b).digest('hex').substr(-10);
   };
 
   Sprite.prototype.suffix = function(s) {

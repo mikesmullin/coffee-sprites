@@ -13,29 +13,35 @@ class CoffeeSprites
     o.sprite_url = o.sprite_url or ''
     o.manifest_file = o.manifest_file or path.join o.sprite_path, 'sprite-manifest.json'
     @o = o
+    @reset()
+
+  reset: ->
+    console.log "\n\n==> RESET"
     @sprites = {}
-    @read_manifest()
+    @_read_manifest = false
 
   read_manifest: ->
-    if fs.existsSync @o.manifest_file
-      console.log "reading manifest..."
-      data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
-      console.log "iterating sprites..."
-      for name, sprite of data.sprites
-        console.log name
-        @sprites[name] = new Sprite name, sprite.options
-        console.log "  images:"
-        for i, file of sprite.images
-          abspath = path.join @o.image_path, (sprite.options.path or ''), file+'.png'
-          console.log abspath
-          if fs.existsSync abspath
-            @sprites[name].add file
-          else
-            console.log "DOESNT EXIST"
-        #console.log @sprites[name]
+    # read first time only
+    # call reset() to permit reading again
+    console.log "\n\n==> WOULD READ"
+    unless @_read_manifest
+      console.log "\n\n==> READ"
+      @_read_manifest = true
+      if fs.existsSync @o.manifest_file
+        console.log "\n\nreading manifest..."
+        data = (JSON.parse(fs.readFileSync @o.manifest_file)) or {}
+        for name, sprite of data.sprites
+          console.log name
+          @sprites[name] = new Sprite name, sprite.options
+          for i, file of sprite.images
+            abspath = path.join @o.image_path, (sprite.options.path or ''), file+'.png'
+            console.log abspath
+            if fs.existsSync abspath
+              @sprites[name].add file
     return
 
   write_manifest: ->
+    console.log "\n\n==> WRITE"
     data =
       sprites: {}
     for name of @sprites
@@ -51,6 +57,7 @@ class CoffeeSprites
     g=engine.o.globals
 
     generate_placeholder = (key, name, png) =>
+      @read_manifest()
       if typeof png isnt 'undefined'
         @sprites[name].add png
       "SPRITE_#{key}_PLACEHOLDER(#{name}, #{png or ''})"
@@ -58,9 +65,15 @@ class CoffeeSprites
     # TODO: add validation to ensure these functions are never permitted
     #       to be called with invalid arguments
     g.sprite_map = (name, options) =>
-      return name if @sprites[name] # share instances by same name
-      sprite = new Sprite name, options
-      @sprites[name] = sprite
+      @read_manifest()
+      if @sprites[name]
+        # reuse existing instance by same name
+        for k of options # merging new options over existing
+          @sprites[name].o[k] = options[k]
+      else
+        # new sprite instance
+        sprite = new Sprite name, options
+        @sprites[name] = sprite
       return name
 
     g.sprite = (sprite, png) ->
@@ -103,6 +116,7 @@ class CoffeeSprites
               return image.px image.h
 
         @write_manifest()
+        instance.reset()
 
         # return final css
         cb null, css
@@ -162,6 +176,7 @@ class Sprite
     o.layout = o.layout or 'smart'
     @images = {}
     @tilesets = {}
+    @tileset_types = ['smart', 'no-repeat', 'repeat-x','repeat-y'] # in order
     @digest = ''
     @o = o
     return
@@ -189,7 +204,9 @@ class Sprite
     read = =>
       flow = async.new()
       for type, tileset of sprite.tilesets
+        console.log "asked to render sprite #{sprite.name} tileset #{type} with images:"
         for k, image of tileset.images
+          console.log "  "+image.basename()
           ((image)-> flow.series -> image.read @)(image)
       flow.finally (err) ->
         return cb err if err
@@ -251,7 +268,7 @@ class Sprite
     # one for each tileset
     render_to_disk = ->
       flow = new async
-      for k, type of ['smart', 'no-repeat', 'repeat-x','repeat-y'] when tileset = sprite.tilesets[type]
+      for k, type of sprite.tileset_types when tileset = sprite.tilesets[type]
         ((type, tileset) -> flow.serial ->
           next = @
           tileset.src = gd.createTrueColor tileset.w, tileset.h
@@ -312,12 +329,16 @@ class Sprite
     return
 
   calc_digest: (type) ->
-    blob = ''
+    # convert to array
+    b = o: [], i: []
     for k of @o
-      blob += ''+k+':'+@o[k]+'|'
+      b.o.push k+':'+@o[k]
     for k, image of @tilesets[type].images
-      blob += image+'|'
-    require('crypto').createHash('md5').update(blob).digest('hex').substr(-10)
+      b.i.push image.basename()
+    # sort and concatenate
+    b = b.o.sort().join('|')+'|'+b.i.sort().join('|')
+    # calculate digest hash
+    require('crypto').createHash('md5').update(b).digest('hex').substr(-10)
 
   suffix: (s) -> { 'smart': '', 'no-repeat': '', 'repeat-x': '-x', 'repeat-y': '-y' }[s]
 
