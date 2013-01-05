@@ -4,8 +4,21 @@
   <link rel="stylesheet" href="assets/application.css" />
 </head>
 <body>
-  <div id="wigi"></div>
+  <p>Animation</p>
+  <div id="wigi" class="smb3"></div>
   <label>1</label>
+
+  <p>Tiling/Repeating X-Axis</p>
+  <div class="x1"></div>
+  <div class="x2"></div>
+
+  <p>Tiling/Repeating Y-Axis</p>
+  <div class="y1"></div>
+  <div class="y2"></div>
+
+  <p>Tiling/Repeating XY-Axis</p>
+  <div class="xy"></div>
+
   <script>
     var e = document.getElementById('wigi')
       , label = document.getElementsByTagName('label')[0]
@@ -57,7 +70,7 @@
       , i = 0;
     setInterval(function(){
       var ii = cycle[i++%cycle.length];
-      e.className = 'wigi-'+ii;
+      e.className = 'smb3 wigi-'+ii;
       label.innerHTML = ii;
     }, delay);
   </script>

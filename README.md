@@ -11,6 +11,7 @@ with [Compass](http://compass-style.org/help/tutorials/spriting/)/SASS, original
 
 ```bash
 sudo apt-get install libgd2-xpm-dev # libgd; the node-gd dependency
+sudo apt-get install pngcrush # optional; helps compress PNG
 npm install coffee-sprites
 ```
 
@@ -99,9 +100,3 @@ For the very latest and most comprehensive example, see [test/fixtures/precompil
 ```bash
 npm test # build coffee, run mocha unit test, run chrome browser integration test
 ```
-
-TODO
-----
- * sprites that repeat-x and repeat-y are left to be implemented (coming soon!)
- * add validation to ensure no function can be called with invalid input to avoid semi-cryptic errors
- * could probably simplify by calculating x, y, width, height using gd directly and once during render() rather than as-we-go

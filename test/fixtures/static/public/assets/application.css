@@ -1,52 +1,138 @@
 /* line 4 */
+p {
+  font-weight: bold;
+  margin: 1em 0;
+  clear: left; }
+/* line 9 */
 * {
   margin: 0;
   padding: 0;
   font-size: 1em; }
-/* line 9 */
+/* line 14 */
 html,
 body {
   height: 100%; }
-/* line 12 */
+/* line 17 */
 body {
   background: #eee;
   color: #333;
   margin: 20px; }
-/* line 20 */
+/* line 26 */
 #wigi {
-  background: url(wigi-2e192be7fd.png) no-repeat;
+  background: url(wigi-f01fa13d86.png) no-repeat;
   height: 112px;
   width: 96px; }
-/* line 29 */
-#wigi.wigi-0 {
-  background-position: 0 -122px; }
-/* line 29 */
-#wigi.wigi-1 {
-  background-position: 0 -244px; }
-/* line 29 */
-#wigi.wigi-2 {
-  background-position: 0 -366px; }
-/* line 29 */
-#wigi.wigi-3 {
-  background-position: 0 -484px; }
-/* line 29 */
-#wigi.wigi-4 {
-  background-position: 0 -606px; }
-/* line 29 */
-#wigi.wigi-5 {
-  background-position: 0 -728px; }
-/* line 29 */
-#wigi.wigi-6 {
-  background-position: 0 -850px; }
-/* line 29 */
-#wigi.wigi-7 {
-  background-position: 0 -968px; }
-/* line 29 */
-#wigi.wigi-8 {
+/* line 34 */
+#wigi.smb3.wigi-0 {
+  background-position: -108px -248px !important; }
+/* line 34 */
+#wigi.smb3.wigi-1 {
+  background-position: -204px -248px !important; }
+/* line 34 */
+#wigi.smb3.wigi-2 {
+  background-position: -304px -248px !important; }
+/* line 34 */
+#wigi.smb3.wigi-3 {
+  background-position: -316px 0 !important; }
+/* line 34 */
+#wigi.smb3.wigi-4 {
+  background-position: -316px -124px !important; }
+/* line 34 */
+#wigi.smb3.wigi-5 {
+  background-position: 0 -248px !important; }
+/* line 34 */
+#wigi.smb3.wigi-6 {
+  background-position: -100px 0 !important; }
+/* line 34 */
+#wigi.smb3.wigi-7 {
+  background-position: -208px 0 !important; }
+/* line 34 */
+#wigi.smb3.wigi-8 {
+  background-position: 0 -124px !important; }
+/* line 34 */
+#wigi.smb3.wigi-9 {
+  background-position: 0 0 !important; }
+/* line 34 */
+#wigi.smb3.wigi-10 {
+  background-position: -108px -124px !important; }
+/* line 49 */
+.smb.world#world-0 {
   background-position: 0 0; }
-/* line 29 */
-#wigi.wigi-9 {
-  background-position: 0 -1086px; }
-/* line 29 */
-#wigi.wigi-10 {
-  background-position: 0 -1208px; }
+/* line 49 */
+.smb.world#world-1 {
+  background-position: 0 0; }
+/* line 49 */
+.smb.world#world-2 {
+  background-position: -68px 0; }
+/* line 49 */
+.smb.world#world-3 {
+  background-position: 0 -68px; }
+/* line 49 */
+.smb.world#world-4 {
+  background-position: -68px -68px; }
+/* line 49 */
+.smb.world#world-5 {
+  background-position: -136px 0; }
+/* line 49 */
+.smb.world#world-6 {
+  background-position: -136px -68px; }
+/* line 49 */
+.smb.world#world-7 {
+  background-position: 0 0; }
+/* line 49 */
+.smb.world#world-8 {
+  background-position: 0 -136px; }
+/* line 49 */
+.smb.world#world-9 {
+  background-position: -68px -136px; }
+/* line 49 */
+.smb.world#world-10 {
+  background-position: -136px -136px; }
+/* line 49 */
+.smb.world#world-11 {
+  background-position: -204px 0; }
+/* line 49 */
+.smb.world#world-12 {
+  background-position: -204px -68px; }
+/* line 49 */
+.smb.world#world-13 {
+  background-position: -204px -136px; }
+/* line 49 */
+.smb.world#world-14 {
+  background-position: 0 -204px; }
+/* line 49 */
+.smb.world#world-15 {
+  background-position: -68px -204px; }
+/* line 49 */
+.smb.world#world-16 {
+  background-position: -136px -204px; }
+/* line 49 */
+.smb.world#world-17 {
+  background-position: -204px -204px; }
+/* line 53 */
+div.x1 {
+  background: url(world-x-67a046afea.png) 0 0 repeat-x;
+  height: 64px;
+  width: 100%; }
+/* line 58 */
+div.x2 {
+  background: url(world-x-67a046afea.png) 0 -68px repeat-x;
+  height: 64px;
+  width: 100%; }
+/* line 63 */
+div.y1 {
+  float: left;
+  background: url(world-y-eac9d8495d.png) -68px 0 repeat-y;
+  width: 64px;
+  height: 320px; }
+/* line 69 */
+div.y2 {
+  float: left;
+  background: url(world-y-eac9d8495d.png) 0 0 repeat-y;
+  width: 64px;
+  height: 320px; }
+/* line 75 */
+div.xy {
+  background: url(brick-4-xy-4259a7b606.png) 0 0 repeat;
+  width: 320px;
+  height: 320px; }

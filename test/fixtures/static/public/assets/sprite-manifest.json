@@ -2,12 +2,13 @@
   "sprites": {
     "wigi": {
       "options": {
-        "spacing": 10,
-        "repeat": "no-repeat"
+        "path": "smb3",
+        "spacing": 12,
+        "layout": "smart"
       },
       "images": [
-        "fly-3",
         "walk-1",
+        "fly-3",
         "walk-2",
         "walk-3",
         "run-1",
@@ -17,6 +18,49 @@
         "fly-2",
         "fall",
         "jump"
+      ]
+    },
+    "world": {
+      "options": {
+        "path": "smb",
+        "spacing": 4,
+        "cloud-1-x-repeat": "repeat-x",
+        "brick-1-xy-repeat": "repeat-x",
+        "brick-2-xy-repeat": "repeat-y",
+        "brick-3-xy-repeat": "repeat-y",
+        "layout": "smart"
+      },
+      "images": [
+        "brick-3-xy",
+        "bridge-1-x",
+        "bridge-2-x",
+        "bridge-3-x",
+        "bush-1-l",
+        "bush-1-m-x",
+        "bush-1-r",
+        "cloud-1-x",
+        "lava-1-x",
+        "mountain-1-l",
+        "mountain-1-m",
+        "mountain-1-r",
+        "shroom-1-l",
+        "shroom-1-m-x",
+        "shroom-1-r",
+        "tree-1-l",
+        "tree-1-m-x",
+        "tree-1-r",
+        "brick-1-xy",
+        "brick-2-xy"
+      ]
+    },
+    "brick-4-xy": {
+      "options": {
+        "path": "smb",
+        "layout": "smart",
+        "spacing": 0
+      },
+      "images": [
+        "brick-4-xy"
       ]
     }
   }

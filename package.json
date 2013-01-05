@@ -8,7 +8,7 @@
   },
   "scripts": {
     "pretest": "coffee --bare -o js coffee/coffee-sprites.coffee",
-    "test": "mocha --reporter spec --bail --ui bdd --colors --compilers coffee:coffee-script --require coffee-script test/test.coffee"
+    "test": "rm -rf test/fixtures/static/public/assets/* && mocha --timeout 100000 --reporter spec --bail --ui bdd --colors --compilers coffee:coffee-script --require coffee-script test/test.coffee"
   },
   "repository": {
     "type": "git",
