@@ -91,9 +91,11 @@ Will output CSS like this:
 
 And the sprite image(s) will turn out like this:
 
- * [test/fixtures/static/public/assets/wigi-2e192be7fd.png](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/static/public/assets/wigi-2e192be7fd.png)
+ * [./test/fixtures/static/public/assets/wigi-94bd83274d.png](https://github.com/mikesmullin/coffee-sprites/blob/stable/static/test/fixtures/static/public/assets/wigi-94bd83274d.png)
 
-For the very latest and most comprehensive example, see [test/fixtures/precompile/assets/stylesheets/application.css.coffee](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/precompile/assets/stylesheets/application.css.coffee).
+For the very latest and most comprehensive examples for input, see [./test/fixtures/precompile/assets/](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/precompile/assets/).
+
+For more examples of output, see [./test/fixtures/static/public/assets](https://github.com/mikesmullin/coffee-sprites/tree/stable/test/fixtures/static/public/assets).
 
 ## Test
 
