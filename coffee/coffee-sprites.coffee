@@ -301,7 +301,7 @@ class Sprite
 
           # override sprite png on disk
           suffixed = tileset.digest_file+'.tmp'
-          log 'pending', "writing #{count} images to #{path.relative process.cwd(), tileset.digest_file}."
+          log 'pending', "writing #{count} images to #{path.relative process.cwd(), tileset.digest_file}..."
           tileset.src.savePng suffixed, 0, =>
             # optimize png
             if instance.o.pngcrush

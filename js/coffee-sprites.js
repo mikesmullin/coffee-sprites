@@ -445,7 +445,7 @@ Sprite = (function() {
                 fs.unlinkSync(file);
               }
               suffixed = tileset.digest_file + '.tmp';
-              log('pending', "writing " + count + " images to " + (path.relative(process.cwd(), tileset.digest_file)) + ".");
+              log('pending', "writing " + count + " images to " + (path.relative(process.cwd(), tileset.digest_file)) + "...");
               return tileset.src.savePng(suffixed, 0, function() {
                 var p, stdout;
                 if (instance.o.pngcrush) {
