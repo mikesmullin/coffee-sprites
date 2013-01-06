@@ -89,13 +89,11 @@ Will output CSS like this:
 }
 ```
 
-And the sprite image(s) will turn out like this:
+and CoffeeSprites will produce output like this:
 
- * [./test/fixtures/static/public/assets/wigi-94bd83274d.png](https://github.com/mikesmullin/coffee-sprites/blob/stable/static/test/fixtures/static/public/assets/wigi-94bd83274d.png)
+* [./test/fixtures/static/public/assets/*.png](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/static/public/assets/)
 
-For the very latest and most comprehensive examples for input, see [./test/fixtures/precompile/assets/](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/precompile/assets/).
-
-For more examples of output, see [./test/fixtures/static/public/assets](https://github.com/mikesmullin/coffee-sprites/tree/stable/test/fixtures/static/public/assets).
+For the latest and most comprehensive examples of input, see [./test/fixtures/precompile/assets/](https://github.com/mikesmullin/coffee-sprites/blob/stable/test/fixtures/precompile/assets/).
 
 ## Test
 
