@@ -25,10 +25,10 @@
         "path": "smb",
         "spacing": 4,
         "cloud-1-x-repeat": "repeat-x",
-        "brick-1-xy-repeat": "repeat-x",
-        "brick-2-xy-repeat": "repeat-y",
         "brick-3-xy-repeat": "repeat-y",
-        "layout": "smart"
+        "layout": "smart",
+        "brick-1-xy-repeat": "repeat-x",
+        "brick-2-xy-repeat": "repeat-y"
       },
       "images": [
         "brick-3-xy",
