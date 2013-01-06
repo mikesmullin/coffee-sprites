@@ -16,7 +16,7 @@ spawn = require('child_process').spawn;
 log = function(i, m) {
   var l;
   l = instance.o.logger;
-  (l.length === 2 && !l(i, m)) || l(m);
+  (l.length === 2 && l(i, m)) || l(m);
 };
 
 CoffeeSprites = (function() {
@@ -62,10 +62,11 @@ CoffeeSprites = (function() {
   };
 
   CoffeeSprites.prototype.write_manifest = function() {
-    var data, file, name;
+    var count, data, file, name;
     data = {
       sprites: {}
     };
+    count = 0;
     for (name in this.sprites) {
       data.sprites[name] = {
         options: this.sprites[name].o,
@@ -73,10 +74,13 @@ CoffeeSprites = (function() {
       };
       for (file in this.sprites[name].images) {
         data.sprites[name].images.push(file);
+        count++;
       }
     }
-    fs.writeFileSync(this.o.manifest_file, JSON.stringify(data, null, 2));
-    log('success', "wrote " + (path.relative(process.cwd(), this.o.manifest_file)) + ".");
+    if (count) {
+      fs.writeFileSync(this.o.manifest_file, JSON.stringify(data, null, 2));
+      log('success', "wrote " + (path.relative(process.cwd(), this.o.manifest_file)));
+    }
   };
 
   CoffeeSprites.prototype.extend = function(engine) {
@@ -276,14 +280,18 @@ Sprite = (function() {
   };
 
   Sprite.prototype.render = function(cb) {
-    var position_and_pack, read, render_to_disk, sprite,
+    var count, k, position_and_pack, read, render_to_disk, sprite,
       _this = this;
     sprite = this;
-    if (sprite.images.length < 1) {
+    count = 0;
+    for (k in sprite.images) {
+      count++;
+    }
+    if (count < 1) {
       return cb(null, "sprite map \"" + sprite.name + "\" has no images.");
     }
     read = function() {
-      var flow, image, k, tileset, type, _fn, _ref, _ref1;
+      var flow, image, tileset, type, _fn, _ref, _ref1;
       flow = async["new"]();
       _ref = sprite.tilesets;
       for (type in _ref) {
@@ -307,7 +315,7 @@ Sprite = (function() {
       });
     };
     position_and_pack = function() {
-      var GrowingPacker, changes, image, k, packer, sort, tileset, type, _ref, _ref1, _ref2, _ref3, _ref4;
+      var GrowingPacker, changes, image, packer, sort, tileset, type, _ref, _ref1, _ref2, _ref3, _ref4;
       sprite.o.spacing = sprite.o.spacing || 0;
       changes = true;
       _ref = sprite.tilesets;
@@ -392,7 +400,7 @@ Sprite = (function() {
       return render_to_disk();
     };
     render_to_disk = function() {
-      var flow, k, tileset, type, _ref;
+      var flow, tileset, type, _ref;
       flow = new async;
       _ref = sprite.tileset_types;
       for (k in _ref) {
@@ -400,7 +408,7 @@ Sprite = (function() {
         if (tileset = sprite.tilesets[type]) {
           (function(type, tileset) {
             return flow.serial(function() {
-              var count, file, files, image, next, pattern, suffixed, transparency, x, y, _i, _j, _k, _len, _ref1, _ref2, _ref3, _ref4, _ref5,
+              var file, files, image, next, pattern, suffixed, transparency, x, y, _i, _j, _k, _len, _ref1, _ref2, _ref3, _ref4, _ref5,
                 _this = this;
               next = this;
               tileset.src = gd.createTrueColor(tileset.w, tileset.h);
@@ -437,11 +445,11 @@ Sprite = (function() {
                 fs.unlinkSync(file);
               }
               suffixed = tileset.digest_file + '.tmp';
+              log('pending', "writing " + count + " images to " + (path.relative(process.cwd(), tileset.digest_file)) + ".");
               return tileset.src.savePng(suffixed, 0, function() {
                 var p, stdout;
-                log('success', "wrote " + count + " images to " + (path.relative(process.cwd(), tileset.digest_file)) + ".");
                 if (instance.o.pngcrush) {
-                  log('pending', "PNGCrushing " + (path.relative(process.cwd(), tileset.digest_file)) + "...");
+                  log('pending', "pngcrush " + (path.relative(process.cwd(), tileset.digest_file)) + "...");
                   p = spawn(instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]);
                   stdout = '';
                   p.stdout.on('data', function(data) {

@@ -4,7 +4,7 @@ fs = require 'fs'
 path = require 'path'
 instance = `undefined`
 spawn = require('child_process').spawn
-log = (i,m) -> l=instance.o.logger; (l.length is 2 and not l i,m) or l m; return
+log = (i,m) -> l=instance.o.logger; (l.length is 2 and l i,m) or l m; return
 
 class CoffeeSprites
   constructor: (o) ->
@@ -40,14 +40,17 @@ class CoffeeSprites
   write_manifest: ->
     data =
       sprites: {}
+    count = 0
     for name of @sprites
       data.sprites[name] =
         options: @sprites[name].o
         images: []
       for file of @sprites[name].images
         data.sprites[name].images.push file
-    fs.writeFileSync @o.manifest_file, JSON.stringify data, null, 2
-    log 'success', "wrote #{path.relative process.cwd(), @o.manifest_file}."
+        count++
+    if count
+      fs.writeFileSync @o.manifest_file, JSON.stringify data, null, 2
+      log 'success', "wrote #{path.relative process.cwd(), @o.manifest_file}"
     return
 
   extend: (engine) -> # CoffeeStylesheets instance
@@ -195,7 +198,8 @@ class Sprite
 
   render: (cb) ->
     sprite = @
-    return cb null, "sprite map \"#{sprite.name}\" has no images." if sprite.images.length < 1
+    count = 0; count++ for k of sprite.images
+    return cb null, "sprite map \"#{sprite.name}\" has no images." if count < 1
 
     # read image w, h dimensions
     read = =>
@@ -297,11 +301,11 @@ class Sprite
 
           # override sprite png on disk
           suffixed = tileset.digest_file+'.tmp'
+          log 'pending', "writing #{count} images to #{path.relative process.cwd(), tileset.digest_file}."
           tileset.src.savePng suffixed, 0, =>
-            log 'success', "wrote #{count} images to #{path.relative process.cwd(), tileset.digest_file}."
             # optimize png
             if instance.o.pngcrush
-              log 'pending', "PNGCrushing #{path.relative process.cwd(), tileset.digest_file}..."
+              log 'pending', "pngcrush #{path.relative process.cwd(), tileset.digest_file}..."
               p = spawn instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]
               stdout = ''
               p.stdout.on 'data', (data) ->
