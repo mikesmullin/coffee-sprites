@@ -300,20 +300,26 @@ class Sprite
             fs.unlinkSync file
 
           # override sprite png on disk
-          suffixed = tileset.digest_file+'.tmp'
+          outfile = 
+            if instance.o.pngcrush
+              tileset.digest_file+'.tmp'
+            else
+              tileset.digest_file
+
+          outfile = tileset.digest_file+(if instance.o.pngcrush then '.tmp' else '')
           log 'pending', "writing #{count} images to #{path.relative process.cwd(), tileset.digest_file}..."
-          tileset.src.savePng suffixed, 0, =>
+          tileset.src.savePng outfile, 0, =>
             # optimize png
             if instance.o.pngcrush
               log 'pending', "pngcrush #{path.relative process.cwd(), tileset.digest_file}..."
-              p = spawn instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]
+              p = spawn instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', outfile, tileset.digest_file]
               stdout = ''
               p.stdout.on 'data', (data) ->
                 stdout = data
               p.stderr.on 'data', (err) ->
                 return next err if err
               p.on 'exit', (code) ->
-                fs.unlinkSync suffixed if fs.existsSync suffixed
+                fs.unlinkSync outfile if fs.existsSync outfile
                 return next "pngcrush exited with code #{code}. #{stdout}" if code isnt 0
                 return next null, true
             else

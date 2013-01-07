@@ -408,7 +408,7 @@ Sprite = (function() {
         if (tileset = sprite.tilesets[type]) {
           (function(type, tileset) {
             return flow.serial(function() {
-              var file, files, image, next, pattern, suffixed, transparency, x, y, _i, _j, _k, _len, _ref1, _ref2, _ref3, _ref4, _ref5,
+              var file, files, image, next, outfile, pattern, transparency, x, y, _i, _j, _k, _len, _ref1, _ref2, _ref3, _ref4, _ref5,
                 _this = this;
               next = this;
               tileset.src = gd.createTrueColor(tileset.w, tileset.h);
@@ -444,13 +444,14 @@ Sprite = (function() {
                 file = files[_k];
                 fs.unlinkSync(file);
               }
-              suffixed = tileset.digest_file + '.tmp';
+              outfile = instance.o.pngcrush ? tileset.digest_file + '.tmp' : tileset.digest_file;
+              outfile = tileset.digest_file + (instance.o.pngcrush ? '.tmp' : '');
               log('pending', "writing " + count + " images to " + (path.relative(process.cwd(), tileset.digest_file)) + "...");
-              return tileset.src.savePng(suffixed, 0, function() {
+              return tileset.src.savePng(outfile, 0, function() {
                 var p, stdout;
                 if (instance.o.pngcrush) {
                   log('pending', "pngcrush " + (path.relative(process.cwd(), tileset.digest_file)) + "...");
-                  p = spawn(instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', suffixed, tileset.digest_file]);
+                  p = spawn(instance.o.pngcrush, ['-rem', 'alla', '-reduce', '-brute', outfile, tileset.digest_file]);
                   stdout = '';
                   p.stdout.on('data', function(data) {
                     return stdout = data;
@@ -461,8 +462,8 @@ Sprite = (function() {
                     }
                   });
                   return p.on('exit', function(code) {
-                    if (fs.existsSync(suffixed)) {
-                      fs.unlinkSync(suffixed);
+                    if (fs.existsSync(outfile)) {
+                      fs.unlinkSync(outfile);
                     }
                     if (code !== 0) {
                       return next("pngcrush exited with code " + code + ". " + stdout);
