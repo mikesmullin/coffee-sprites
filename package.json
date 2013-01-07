@@ -1,6 +1,6 @@
 {
   "name": "coffee-sprites",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "CoffeeScript/JavaScript stylesheet-based sprite image engine.",
   "main": "js/coffee-sprites.js",
   "directories": {
