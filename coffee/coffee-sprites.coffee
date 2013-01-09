@@ -236,7 +236,7 @@ class Sprite
                 return diff unless diff is 0
                 n++
               0
-          tileset.images.sort sort.maxsize
+          tileset.images.sort sort.maxside
           GrowingPacker = require '../vendor/packer.growing.js'
           packer = new GrowingPacker()
           packer.fit tileset.images
@@ -283,12 +283,15 @@ class Sprite
             count++
             switch type
               when 'no-repeat', 'smart'
+                #console.log "#{image.basename()} over #{type} at #{image.x}, #{image.y} dim #{image.w} x #{image.h}"
                 image.src.copy tileset.src, image.x, image.y, 0, 0, image.w, image.h
               when 'repeat-x'
                 # stretch it across width of image
+                #console.log "#{image.basename()} over #{type} at #{x}, #{image.y} dim #{image.w} x #{image.h}"
                 for x in [0...tileset.w] by image.w
                   image.src.copy tileset.src, x, image.y, 0, 0, image.w, image.h
               when 'repeat-y'
+                #console.log "#{image.basename()} over #{type} at #{image.x}, #{y} dim #{image.w} x #{image.h}"
                 # stretch it across height of image
                 for y in [0...tileset.h] by image.h
                   image.src.copy tileset.src, image.x, y, 0, 0, image.w, image.h

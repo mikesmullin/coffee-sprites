@@ -357,7 +357,7 @@ Sprite = (function() {
               return 0;
             }
           };
-          tileset.images.sort(sort.maxsize);
+          tileset.images.sort(sort.maxside);
           GrowingPacker = require('../vendor/packer.growing.js');
           packer = new GrowingPacker();
           packer.fit(tileset.images);

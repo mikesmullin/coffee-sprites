@@ -24,46 +24,46 @@ body {
   width: 96px; }
 /* line 34 */
 #wigi.smb3.wigi-0 {
-  background-position: -108px -248px !important; }
+  background-position: -324px 0 !important; }
 /* line 34 */
 #wigi.smb3.wigi-1 {
-  background-position: -204px -248px !important; }
+  background-position: -108px -124px !important; }
 /* line 34 */
 #wigi.smb3.wigi-2 {
-  background-position: -304px -248px !important; }
+  background-position: -216px -248px !important; }
 /* line 34 */
 #wigi.smb3.wigi-3 {
-  background-position: -316px 0 !important; }
+  background-position: -108px 0 !important; }
 /* line 34 */
 #wigi.smb3.wigi-4 {
-  background-position: -316px -124px !important; }
-/* line 34 */
-#wigi.smb3.wigi-5 {
-  background-position: 0 -248px !important; }
-/* line 34 */
-#wigi.smb3.wigi-6 {
-  background-position: -100px 0 !important; }
-/* line 34 */
-#wigi.smb3.wigi-7 {
-  background-position: -208px 0 !important; }
-/* line 34 */
-#wigi.smb3.wigi-8 {
-  background-position: 0 -124px !important; }
-/* line 34 */
-#wigi.smb3.wigi-9 {
   background-position: 0 0 !important; }
 /* line 34 */
+#wigi.smb3.wigi-5 {
+  background-position: 0 -124px !important; }
+/* line 34 */
+#wigi.smb3.wigi-6 {
+  background-position: 0 -248px !important; }
+/* line 34 */
+#wigi.smb3.wigi-7 {
+  background-position: -108px -248px !important; }
+/* line 34 */
+#wigi.smb3.wigi-8 {
+  background-position: -216px 0 !important; }
+/* line 34 */
+#wigi.smb3.wigi-9 {
+  background-position: -208px -124px !important; }
+/* line 34 */
 #wigi.smb3.wigi-10 {
-  background-position: -108px -124px !important; }
+  background-position: -420px 0 !important; }
 /* line 47 */
 .smb.world#world-0 {
   background-position: 0 0; }
 /* line 47 */
 .smb.world#world-1 {
-  background-position: 0 0; }
+  background-position: -68px 0; }
 /* line 47 */
 .smb.world#world-2 {
-  background-position: -68px 0; }
+  background-position: -136px -136px; }
 /* line 47 */
 .smb.world#world-3 {
   background-position: 0 -68px; }
@@ -87,7 +87,7 @@ body {
   background-position: -68px -136px; }
 /* line 47 */
 .smb.world#world-10 {
-  background-position: -136px -136px; }
+  background-position: 0 0; }
 /* line 47 */
 .smb.world#world-11 {
   background-position: -204px 0; }
