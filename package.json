@@ -32,11 +32,11 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "chai": "*",
-    "coffee-stylesheets": "https://github.com/mikesmullin/coffee-stylesheets/tarball/stable"
+    "coffee-stylesheets": "*"
   },
   "dependencies": {
-    "node-gd": "https://github.com/mikesmullin/node-gd/tarball/stable",
-    "async2": "https://github.com/mikesmullin/async2/tarball/stable",
+    "node-gd": "*",
+    "async2": "*",
     "glob": "*"
   }
 }
